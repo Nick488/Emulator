@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pokémon Emerald - GBA Emulator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e5128 0%, #4e9f3d 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            width: 100%;
+            background: #1a1a1a;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.8);
+        }
+
+        h1 {
+            color: #ffd700;
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 2.5rem;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.5);
+        }
+
+        .subtitle {
+            color: #4ade80;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 1.2rem;
+        }
+
+        .game-wrapper {
+            background: #000;
+            border: 5px solid #4ade80;
+            border-radius: 15px;
+            padding: 0;
+            margin-bottom: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        #game {
+            width: 100%;
+            min-height: 600px;
+        }
+
+        .upload-screen {
+            padding: 80px 40px;
+            text-align: center;
+            color: white;
+        }
+
+        .upload-screen h2 {
+            color: #4ade80;
+            font-size: 2rem;
+            margin-bottom: 20px;
+        }
+
+        .upload-screen p {
+            font-size: 1.1rem;
+            margin: 15px 0;
+        }
+
+        .btn {
+            background: #4ade80;
+            color: #000;
+            border: none;
+            padding: 18px 50px;
+            font-size: 1.3rem;
+            font-weight: bold;
+            border-radius: 12px;
+            cursor: pointer;
+            margin: 20px 10px;
+            transition: all 0.3s ease;
+            display: inline-block;
+            text-decoration: none;
+        }
+
+        .btn:hover {
+            background: #22c55e;
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(74, 222, 128, 0.4);
+        }
+
+        .btn:active {
+            transform: translateY(-1px);
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+
+        .controls {
+            background: #2a2a2a;
+            border-radius: 12px;
+            padding: 25px;
+            margin-top: 20px;
+        }
+
+        .controls h3 {
+            color: #ffd700;
+            margin-bottom: 20px;
+            font-size: 1.3rem;
+        }
+
+        .control-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 15px;
+        }
+
+        .control-item {
+            background: #1a1a1a;
+            padding: 15px;
+            border-radius: 10px;
+            border-left: 4px solid #4ade80;
+            color: white;
+            font-size: 1rem;
+        }
+
+        .control-item strong {
+            color: #4ade80;
+            font-size: 1.1rem;
+        }
+
+        .status-bar {
+            background: #2a2a2a;
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 20px;
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .status-item {
+            color: white;
+            font-size: 1.1rem;
+        }
+
+        .status-item span {
+            color: #4ade80;
+            font-weight: bold;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 80px 40px;
+        }
+
+        .spinner {
+            border: 5px solid rgba(255,255,255,0.1);
+            border-top: 5px solid #4ade80;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        @media (max-width: 768px) {
+            h1 { font-size: 2rem; }
+            .control-grid { grid-template-columns: 1fr; }
+            .btn { padding: 15px 35px; font-size: 1.1rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎮 Pokémon Emerald</h1>
+        <p class="subtitle">Full-Featured GBA Emulator</p>
+
+        <div class="game-wrapper">
+            <div id="game">
+                <div id="uploadScreen" class="upload-screen">
+                    <h2>Ready to Play!</h2>
+                    <p>🎮 Professional GBA Emulator</p>
+                    <p>💾 Full save state support</p>
+                    <p>🎯 Perfect frame rate</p>
+                    <p>⚡ Fast forward & rewind</p>
+                    <button class="btn" id="loadRomBtn">
+                        📁 Load Pokemon Emerald ROM
+                    </button>
+                    <input type="file" id="romInput" accept=".gba">
+                </div>
+
+                <div id="loadingScreen" class="loading hidden">
+                    <h2 style="color: #4ade80; margin-bottom: 20px;">Loading Game...</h2>
+                    <div class="spinner"></div>
+                    <p style="color: white; margin-top: 20px;" id="loadingText">Initializing emulator...</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <h3>🎮 Keyboard Controls</h3>
+            <div class="control-grid">
+                <div class="control-item">
+                    <strong>Arrow Keys ↑↓←→</strong><br>
+                    D-Pad Movement
+                </div>
+                <div class="control-item">
+                    <strong>Z Key</strong><br>
+                    A Button (Confirm)
+                </div>
+                <div class="control-item">
+                    <strong>X Key</strong><br>
+                    B Button (Cancel)
+                </div>
+                <div class="control-item">
+                    <strong>Enter</strong><br>
+                    Start Button
+                </div>
+                <div class="control-item">
+                    <strong>Shift</strong><br>
+                    Select Button
+                </div>
+                <div class="control-item">
+                    <strong>A / S Keys</strong><br>
+                    L / R Shoulder Buttons
+                </div>
+            </div>
+        </div>
+
+        <div class="status-bar">
+            <div class="status-item">
+                🎮 ROM: <span id="romName">Not Loaded</span>
+            </div>
+            <div class="status-item">
+                📊 Status: <span id="status">Ready</span>
+            </div>
+            <div class="status-item">
+                💾 Emulator: <span>EmulatorJS v4</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let romData = null;
+        let gameLoaded = false;
+
+        document.getElementById('loadRomBtn').addEventListener('click', function() {
+            document.getElementById('romInput').click();
+        });
+
+        document.getElementById('romInput').addEventListener('change', async function(e) {
+            if (e.target.files.length === 0) return;
+
+            const file = e.target.files[0];
+            console.log('📁 Loading ROM:', file.name);
+
+            document.getElementById('uploadScreen').classList.add('hidden');
+            document.getElementById('loadingScreen').classList.remove('hidden');
+            document.getElementById('status').textContent = 'Loading...';
+
+            try {
+                document.getElementById('loadingText').textContent = 'Reading ROM file...';
+                const arrayBuffer = await file.arrayBuffer();
+                romData = new Uint8Array(arrayBuffer);
+
+                console.log('✓ ROM size:', romData.length, 'bytes');
+
+                document.getElementById('loadingText').textContent = 'Extracting game info...';
+                const gameNameBytes = romData.slice(0xA0, 0xAC);
+                const gameName = new TextDecoder().decode(gameNameBytes).trim();
+                const sizeMB = (romData.length / 1024 / 1024).toFixed(1);
+
+                console.log('✓ Game:', gameName, '(' + sizeMB + 'MB)');
+
+                document.getElementById('romName').textContent = gameName;
+
+                document.getElementById('loadingText').textContent = 'Creating ROM URL...';
+                const blob = new Blob([romData], { type: 'application/octet-stream' });
+                const romUrl = URL.createObjectURL(blob);
+
+                document.getElementById('loadingText').textContent = 'Loading emulator...';
+                
+                window.EJS_player = '#game';
+                window.EJS_core = 'gba';
+                window.EJS_gameUrl = romUrl;
+                window.EJS_pathtodata = 'https://cdn.jsdelivr.net/gh/EmulatorJS/EmulatorJS@latest/data/';
+                window.EJS_biosUrl = '';
+                window.EJS_startOnLoaded = true;
+                window.EJS_fullscreenOnLoaded = false;
+                window.EJS_AdUrl = '';
+                window.EJS_color = '#4ade80';
+
+                const script = document.createElement('script');
+                script.src = 'https://cdn.jsdelivr.net/gh/EmulatorJS/EmulatorJS@latest/data/loader.js';
+                
+                script.onload = function() {
+                    console.log('✓ EmulatorJS loaded successfully');
+                    document.getElementById('loadingScreen').classList.add('hidden');
+                    document.getElementById('status').textContent = 'Playing';
+                    gameLoaded = true;
+                };
+
+                script.onerror = function() {
+                    console.error('❌ Failed to load EmulatorJS');
+                    showError('Failed to load emulator library. Please refresh and try again.');
+                };
+
+                document.head.appendChild(script);
+
+            } catch (error) {
+                console.error('❌ Error:', error);
+                showError('Error loading ROM: ' + error.message);
+            }
+        });
+
+        function showError(message) {
+            document.getElementById('loadingScreen').classList.add('hidden');
+            document.getElementById('uploadScreen').classList.remove('hidden');
+            document.getElementById('uploadScreen').innerHTML = `
+                <h2 style="color: #ef4444;">Error</h2>
+                <p style="color: white;">${message}</p>
+                <button class="btn" onclick="location.reload()">
+                    🔄 Try Again
+                </button>
+            `;
+            document.getElementById('status').textContent = 'Error';
+        }
+
+        window.addEventListener('beforeunload', function(e) {
+            if (gameLoaded) {
+                e.preventDefault();
+                e.returnValue = '';
+                return '';
+            }
+        });
+
+        console.log('🎮 Pokémon Emerald Emulator Ready');
+        console.log('📁 Load your ROM to start playing!');
+    </script>
+</body>
+</html>
